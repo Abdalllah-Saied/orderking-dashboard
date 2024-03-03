@@ -67,4 +67,9 @@ WebSockets are used to provide real-time updates to users and merchants. When a 
 - Email: user@example.com
 - Password: password
 
+
+The system includes a superadmin role to manage and oversee the entire OrderKing system. The superadmin has the authority to approve users and has a global view of all merchants and their associated users.
+
+The separation between superadmin, merchants, and users is achieved through a dedicated entry in the `tenants` table. The first record in the `tenants` table is assigned the domain "superadmin." This special merchant serves as the superadmin and is granted elevated permissions, allowing full control over the system.
+
 ---
