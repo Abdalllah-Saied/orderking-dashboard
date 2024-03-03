@@ -20,8 +20,8 @@ class SuperAdminSeeder extends Seeder
             'name' => 'Super Admin',
             'email' => 'superadmin@example.com',
             'password' => bcrypt('password'),
-            'tenant_id' => $tenant->id , // Set the tenant_id
-
+            'tenant_id' => $tenant->id ,
+            'status' => 'approved',
         ]);
     }
 }
