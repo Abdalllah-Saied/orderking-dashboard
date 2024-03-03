@@ -1,66 +1,75 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# OrderKing Dashboard
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+This repository contains a Laravel project for the OrderKing Backoffice/Dashboard. The dashboard is designed for restaurant owners/merchants, providing separate interfaces for superadmins, merchants, and users.
 
-## About Laravel
+## Multi-Tenancy Implementation
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### Approach
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+The project is built using a single-database multi-tenancy approach. Each tenant (merchant) is associated with a unique domain, allowing them to operate independently within the same database. Tenant identification is based on the domain, and the `tenant_id` field is used to establish relationships between tenants and other entities.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Implementation
 
-## Learning Laravel
+1. **Database Structure:**
+   - The database includes tables for tenants (`merchants`), users (`users`), and other relevant entities.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+2. **Models:**
+   - The `Tenant` model represents a merchant and is associated with the `users` table using the Eloquent ORM.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+3. **Middleware:**
+   - The `TenantMiddleware` is used to identify the current tenant based on the request's domain and set the `tenant_id` for the current request.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+4. **Seeders:**
+   - Seeders are created to populate the database with a superadmin, merchants, and users.
 
-## Laravel Sponsors
+## Dashboard Separation
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Superadmin Dashboard
 
-### Premium Partners
+- A superadmin dashboard (`SuperadminController`) is implemented to show all merchants and their associated users.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+### Merchant Dashboard
 
-## Contributing
+- A merchant dashboard (`MerchantController`) is implemented to display all users associated with the current merchant.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### User Dashboard
 
-## Code of Conduct
+- A user dashboard is implemented to show the user's status, which is dynamically updated using WebSockets.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## WebSockets Implementation
 
-## Security Vulnerabilities
+WebSockets are used to provide real-time updates to users and merchants. When a user registers at a merchant's domain, their status is initially set to "unapproved." The merchant can then approve the user, updating their status to "approved" in real-time.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Steps:
+1. Install required packages: `composer require pusher/pusher-php-server` and `npm install --save laravel-echo pusher-js`.
+2. Configure Pusher in the `.env` file.
+3. Implement broadcasting in Laravel.
+4. Create a `UserStatusUpdated` event for broadcasting.
+5. Broadcast the event when the user is approved.
+6. Use Laravel Echo in user and merchant dashboards to listen for the event and update the status dynamically.
 
-## License
+### Credentials
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+#### Superadmin
+- Email: superadmin@example.com
+- Password: password
+
+#### Merchants
+1. Merchant 1:
+   - Email: merchant1@example.com
+   - Password: password
+
+2. Merchant 2:
+   - Email: merchant2@example.com
+   - Password: password
+
+#### User
+- Email: user@example.com
+- Password: password
+
+
+The system includes a superadmin role to manage and oversee the entire OrderKing system. The superadmin has the authority to approve users and has a global view of all merchants and their associated users.
+
+The separation between superadmin, merchants, and users is achieved through a dedicated entry in the `tenants` table. The first record in the `tenants` table is assigned the domain "superadmin." This special merchant serves as the superadmin and is granted elevated permissions, allowing full control over the system.
+
+---
