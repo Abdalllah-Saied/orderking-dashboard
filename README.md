@@ -40,13 +40,6 @@ The project is built using a single-database multi-tenancy approach. Each tenant
 
 WebSockets are used to provide real-time updates to users and merchants. When a user registers at a merchant's domain, their status is initially set to "unapproved." The merchant can then approve the user, updating their status to "approved" in real-time.
 
-### Steps:
-1. Install required packages: `composer require pusher/pusher-php-server` and `npm install --save laravel-echo pusher-js`.
-2. Configure Pusher in the `.env` file.
-3. Implement broadcasting in Laravel.
-4. Create a `UserStatusUpdated` event for broadcasting.
-5. Broadcast the event when the user is approved.
-6. Use Laravel Echo in user and merchant dashboards to listen for the event and update the status dynamically.
 
 ### Credentials
 
