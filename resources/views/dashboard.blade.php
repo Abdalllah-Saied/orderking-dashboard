@@ -1,3 +1,5 @@
+<!-- resources/views/dashboard.blade.php -->
+
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
@@ -10,6 +12,17 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     {{ __("You're logged in!") }}
+
+                    <!-- Add links to new routes -->
+                    <div class="mt-4">
+                        <a href="{{ route('merchant.dashboard') }}" class="text-blue-500 hover:underline">Merchant Dashboard</a>
+                    </div>
+                    <div class="mt-4">
+                        <a href="{{ route('tenants') }}" class="text-blue-500 hover:underline">Tenants</a>
+                    </div>
+                    <div class="mt-4">
+                        <a href="{{ route('superadmin.dashboard') }}" class="text-blue-500 hover:underline">Superadmin Dashboard</a>
+                    </div>
                 </div>
             </div>
         </div>
